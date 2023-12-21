@@ -17,11 +17,23 @@ def game_scene():
     image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
     image_bank_sprites = stage.Bank.from_bmp16("space_aliens.bmp")
 
+    # buttons that you want to keep state information on 
+    a_button = constants.button_state["button_up"]
+    b_button = constants.button_state["button_up"]
+    start_button = constants.button_state["button_up"]
+    select_button = constants.button-state["button_up"]
+
+    # get sound ready
+    pew_sound = open("pew.wav", 'rb')\
+    sound = ugame.audio
+    sound.stop()
+    sound.mute(False)
+    
     # set the background to image 0 in the image bank
     #   and the size (10x8 tiles of size 16x16)
-    background = stage.Grid(image_bank_background, 10, 8)
-
-    ship = stage.Sprite(image_bank_sprites, 5, 75, 66)
+    background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y) 
+ 
+    ship = stage.Sprite(image_bank_sprites, 5, 75, constants.SCREEN_Y - (2 * constants.SPRITE_SIZE))
 
     # create a stage for the background to show up on
     #   and set the frame rate to 60fps
@@ -32,7 +44,6 @@ def game_scene():
     # most likey you will only render the background once per game scene
     game.render_block()
    
-
     # repeat forever, game loop
     while True:
         # get user input
@@ -40,29 +51,27 @@ def game_scene():
 
 
         if keys & ugame.K_X:
-            print("pass")
+            pass
         if keys & ugame.K_O:
-            print("pass")
+            pass
         if keys & ugame.K_START:
-            print("pass")
+            pass
         if keys & ugame.K_SELECT:
-            print("pass")
+           pass
         if keys & ugame.K_RIGHT:
             if ship.x <= constants.SCREEN_X - constants.SPRITE_SIZE:
                 ship.move(ship.x + 1, ship.y)
-        else:
-            ship.move(constants.SCREEN_X - constants.SPRITE_SIZE, ship.y)
-
-
+            else: 
+                ship.move(constants.SCREEN_X - constants.SPRITE_SIZE, ship.y)
         if keys & ugame.K_LEFT:
-            if ship.x >= 0:
+            if ship.x >=0:
                 ship.move(ship.x - 1, ship.y)
             else:
                 ship.move(0, ship.y)
         if keys & ugame.K_UP:
-            ship.move(ship.x, ship.y - 1)
+            pass
         if keys & ugame.K_DOWN:
-            ship.move(ship.x, ship.y + 1)
+            pass
 
 
 
