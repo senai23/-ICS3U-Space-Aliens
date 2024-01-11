@@ -156,7 +156,15 @@ def menu_scene():
 
 def game_scene():
     # this function is the main game game_scene
- 
+     
+    # for score
+    score = 0
+
+    score_text = stage.Text(width=29, height=14)
+    score_text.clear()
+    score_text.cursor(0,0)
+    score_text.move(1,1)
+    score_text.text("Score: {0}".format(score))
     def show_alien():
         # this function takes an alien from off screen and move it on screen
         for alien_number in range(len(aliens)):
@@ -165,8 +173,11 @@ def game_scene():
                                                         constants.SCREEN_X - constants.SPRITE_SIZE),
                                           constants.OFF_TOP_SCREEN)
                 break
+    # for score
+    score = 0
+
     # importing background from files into
-    image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
+    image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
     image_bank_sprites = stage.Bank.from_bmp16("space_aliens.bmp")
 
     # buttons that you want to keep state information on 
@@ -177,6 +188,7 @@ def game_scene():
 
     # get sound ready
     pew_sound = open("pew.wav", 'rb')
+    boom_wav = open("boom.wav", 'rb')
     sound = ugame.audio
     sound.stop()
     sound.mute(False)
@@ -215,7 +227,7 @@ def game_scene():
     #   and set the frame rate to 60fps
     game= stage.Stage(ugame.display, 60)
     # set the layers, items show up in order
-    game.layers = aliens + lasers + [ship] + [background]
+    game.layers =[score_text] + aliens + lasers + [ship] + [background]
     # render the background and the initial location of sprite list
     # most likey you will only render the background once per game scene
     game.render_block()
@@ -289,8 +301,49 @@ def game_scene():
                      aliens[alien_number].move(constants.OFF_SCREEN_X,
                                                constants.OFF_SCREEN_Y)
                      show_alien()
+        # each frame move the aliens down, that are on the screen
+        for alien_number in range (len(aliens)):
+            if aliens [alien_number].x > 0:
+                aliens[alien_number].move(aliens[alien_number].x,
+                                          aliens[alien_number].y +
+                                            constants.ALIEN_SPEED)
+                if aliens[alien_number].y > constants.SCREEN_Y:
+                    aliens[alien_number].move(constants.OFF_SCREEN_X,
+                                              constants.OFF_SCREEN_Y)
+                    show_alien()
+                    score_=1
+                    if score < 0:
+                        score = 0
+                    score_text.clear()
+                    score_text.cursor(0,0)
+                    score_text. move(1,1)
+                    score_text.text("Score: {0}.format(score)")
 
-         # redraw Sprites
+        # each frame check if any lasers are touching any of aliens
+        for laser_number in range(len(lasers)):
+          if lasers[laser_number].x > 0:
+            for alien_number in range(len(aliens)):
+                if aliens[alien_number].x > 0:
+                    if stage.collide(lasers[laser_number].x + 6, lasers[laser_number].y + 2,
+                                         lasers[laser_number].x + 11, lasers[laser_number].y + 12,
+                                         aliens[alien_number].x + 1, aliens[alien_number].y,
+                                         aliens[alien_number].x + 15, aliens[alien_number].y + 15):
+
+                        # you hit an alien
+                        aliens[alien_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                        lasers[laser_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                        boom_wav = open("boom.wav", 'rb')
+                        sound.stop()
+                        sound.play(boom_wav)
+                        show_alien()
+                        show_alien()
+                        score = score + 1
+                        score_text.clear()
+                        score_text.cursor(0,0)
+                        score_text.move(1,1)
+                        score_text.text("Score: {0}". format(score))
+
+         # redraw Sprites   
         game.render_sprites(aliens + lasers +[ship])
         game.tick() # wait until refresh rate finishes
 
